@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-pro
+    ports:
+      - '27018:27017'
+
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=docker
+      - MONGODB_INITDB_ROOT_PASSWORD=docker
+    volumes:
+      - mongo-data:/data/db
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile          
+    container_name: producao-app    
+    ports:
+      - 3336:3336
+      - 9231:9231 #porta para debug
+    volumes:
+      - ./src:/usr/src/app/src 
+
+    environment:                  
+      - APP_PORT=3336
+      - DB_DATABASE=producao      
+      - MONGO_URI=mongodb://mongo-pro:27017/producao      
+    links:
+      - mongo
+
+    depends_on:
+      - mongo 
+
+volumes:
+  mongo-data:
+    driver: local
