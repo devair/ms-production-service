@@ -1,14 +1,12 @@
 import express from "express"
 import "express-async-errors"
 import * as dotenv from 'dotenv'
-import amqplib from "amqplib"
-import { AppDataSource } from "../infra/datasource/typeorm"
-//import { router } from "../interface/web/routers"
-//import { CreatePaymentUseCase } from "../application/useCases/payments/CreatePaymentUseCase"
-import { OrderCreatedQueueAdapterIN } from "../infra/messaging/OrderCreatedQueueAdapterIN"
-
-import { PaymentQueueAdapterOUT } from "../infra/messaging/PaymentQueueAdapterOUT"
 import { CreateOrderUseCase } from "../application/useCases/CreateOrderUseCase"
+import { AppDataSource } from "../infra/datasource/typeorm"
+import { OrderCreatedQueueAdapterIN } from "../infra/messaging/OrderCreatedQueueAdapterIN"
+import { router } from "../interface/web/routers"
+import { QueueNames } from "../core/messaging/QueueNames"
+import RabbitMQOrderQueueAdapterOUT from "../infra/messaging/RabbitMQOrderQueueAdapterOUT"
 
 dotenv.config()
 const rabbitMqUrl = process.env.RABBITMQ_URL ? process.env.RABBITMQ_URL : ''
@@ -36,17 +34,15 @@ export const createApp = async () => {
 
             const orderCreatedConsumer = new OrderCreatedQueueAdapterIN(rabbitMqUrl, createOrderUseCase)
             await orderCreatedConsumer.consume()
+            
 
-/*
-            const rabbitMQConnection = await amqplib.connect(rabbitMqUrl);
-            const paymentApprovedPublisher = new PaymentQueueAdapterOUT(rabbitMQConnection, QueueNames.PAYMENT_APPROVED)
-            await paymentApprovedPublisher.connect()
+            const orderQueueAdapterOut = new RabbitMQOrderQueueAdapterOUT()
+            await orderQueueAdapterOut.connect()
 
-            app.use('/api/v1', router(datasource, paymentApprovedPublisher))
-*/
+            app.use('/api/v1', router(datasource, orderQueueAdapterOut))
 
             app.listen(port, () => {
-                console.log(`Payments service listening  on port ${port}`)
+                console.log(`Production service listening  on port ${port}`)
             })
         }).catch(error => console.log(error))
     }

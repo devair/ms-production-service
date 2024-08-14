@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm"
-import { IOrderQueueAdapterOUT } from "../../core/messaging/IOrderQueueAdapterOUT"
 import { OrderSchema } from "../../infra/datasource/typeorm/entities/OrderSchema"
 import { OutputCreateOrderDTO } from "../dtos/ICreateOrderDTO"
+import { Order } from "../../core/entities/Order"
 
 class CreateOrderUseCase {
     
@@ -9,7 +9,7 @@ class CreateOrderUseCase {
         private dataSource: DataSource
     ) {}
     
-    async execute(order: any): Promise<OutputCreateOrderDTO> {
+    async execute(order: Order): Promise<OutputCreateOrderDTO> {
 
 
         const queryRunner = this.dataSource.createQueryRunner()
@@ -17,12 +17,13 @@ class CreateOrderUseCase {
 
         try {            
 
-            const orderCreated = await queryRunner.manager.getRepository(OrderSchema).save(order)
+            const orderCreated = await queryRunner.manager.getRepository(OrderSchema).save(OrderSchema.fromDomain(order))
 
-            const orderMessage = {
-                id: orderCreated.id,
-                status: orderCreated.status,
-                amount: orderCreated.amount
+            const orderToDomain = orderCreated.toDomain()
+
+            const orderMessage :OutputCreateOrderDTO = { 
+                id: orderToDomain.id,
+                status: orderToDomain.status                
             }
             
             await queryRunner.commitTransaction()    

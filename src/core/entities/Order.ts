@@ -1,13 +1,24 @@
 import { Product } from "./Product"
 
 export class Order {
-    id?: string;
-    customerName: string;
-    products: Product[];
+    id?: string
+    orderId: number
+    customerName: string
+    items: Product[]
     status: string    
 
-    constructor(customerName: string, products: Product[]) {
-        this.customerName = customerName;
-        this.products = products;        
+    constructor(customerName: string) {
+        this.customerName = customerName
+        this.items = []     
     }
 }
+
+export enum OrderStatus {
+    WAIT_PAYMENT = 'Aguardando pagamento',
+    RECEIVED = 'Recebido',
+    IN_PROGRESS = 'Em preparação',
+    DONE = 'Pronto',
+    CLOSED = 'Finalizado',
+    REJECTED = 'Rejeitado'
+}
+

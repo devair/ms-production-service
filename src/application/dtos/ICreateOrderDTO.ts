@@ -6,9 +6,8 @@ interface InputCreateOrderDTO {
 }
 
 interface OutputCreateOrderDTO {
-    id: number
-    status: string
-    amount: number
+    id: string
+    status: string    
 }
 
 export { InputCreateOrderDTO, OutputCreateOrderDTO }
