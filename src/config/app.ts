@@ -5,7 +5,6 @@ import { CreateOrderUseCase } from "../application/useCases/CreateOrderUseCase"
 import { AppDataSource } from "../infra/datasource/typeorm"
 import { OrderCreatedQueueAdapterIN } from "../infra/messaging/OrderCreatedQueueAdapterIN"
 import { router } from "../interface/web/routers"
-import { QueueNames } from "../core/messaging/QueueNames"
 import RabbitMQOrderQueueAdapterOUT from "../infra/messaging/RabbitMQOrderQueueAdapterOUT"
 
 dotenv.config()

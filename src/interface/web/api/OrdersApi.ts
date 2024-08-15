@@ -5,7 +5,6 @@ import { ListOrdersController } from "../../../communication/controllers/ListOrd
 import { OrderPresenter } from "../../../communication/presenters/OrderPresenter"
 import { UpdateOrderStatusUseCase } from "../../../application/useCases/UpdateOrderStatusUseCase"
 import { UpdateOrderStatusController } from "../../../communication/controllers/UpdateOrderStatusController"
-import RabbitMQOrderQueueAdapterOUT from "../../../infra/messaging/RabbitMQOrderQueueAdapterOUT"
 import { IOrderQueueAdapterOUT } from "../../../core/messaging/IOrderQueueAdapterOUT"
 
 class OrdersApi {
