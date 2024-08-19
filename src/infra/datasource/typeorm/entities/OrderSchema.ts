@@ -5,8 +5,8 @@ import { Order } from "../../../../core/entities/Order"
 
 @Entity({ name: "order" })
 export class OrderSchema {
-    @ObjectIdColumn()
-    id: ObjectId
+    @ObjectIdColumn({ name: '_id'})
+    _id: ObjectId
 
     @Column({ nullable : false, unique: true})
     orderId: number
@@ -22,7 +22,7 @@ export class OrderSchema {
 
     toDomain(): Order {
         let order = new Order(this.customerName)
-        order.id = this.id.toString()
+        order.id = this._id.toString()
         order.status = this.status
         order.items = this.items.map((elem) => elem.toDomain())
         order.customerName = this.customerName
@@ -34,7 +34,7 @@ export class OrderSchema {
         const orderSchema = new OrderSchema()
 
         if (order.id) {
-            orderSchema.id = new ObjectId(order.id)
+            orderSchema._id = new ObjectId(order.id)
         }   
         orderSchema.customerName = order.customerName
         orderSchema.orderId = order.orderId      

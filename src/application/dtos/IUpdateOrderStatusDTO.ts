@@ -5,6 +5,7 @@ interface InputUpdateOrderStatusDTO {
 
 interface OutputUpdateOrderStatusDTO {
     id: string
+    orderId: number
     status: string
 }
 

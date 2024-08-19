@@ -2,6 +2,7 @@ import { Repository  } from "typeorm";
 import { IOrdersGateway } from "../../../../communication/gateways/IOrdersGateway"
 import { OrderSchema } from "../entities/OrderSchema"
 import { Order } from "../../../../core/entities/Order"
+import { ObjectId } from "mongodb"
 
 class OrdersRepositoryMongoDb implements IOrdersGateway{
     
@@ -24,8 +25,11 @@ class OrdersRepositoryMongoDb implements IOrdersGateway{
         return orders
     }
 
-    findById(id: string): Promise<Order> {
-        throw new Error("Method not implemented.")
+    async findById(id: string): Promise<Order> {
+        const order = await this.repository.findOne({ where: { _id: new ObjectId(id) }}) 
+        if(order)
+            return order.toDomain()
+        return null
     }
     updateStatus(order: Order): Promise<Order> {
         throw new Error("Method not implemented.")

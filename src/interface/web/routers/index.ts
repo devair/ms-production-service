@@ -9,7 +9,7 @@ export const router = (dataSource: DataSource, publisher: IOrderQueueAdapterOUT)
     const router = Router()
 
     const orderApi = new OrdersApi(dataSource, publisher)
-    router.use('/orders', ordersRouter(orderApi))
+    router.use('/production-orders', ordersRouter(orderApi))
 
     return router
 }

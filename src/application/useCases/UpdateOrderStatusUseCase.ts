@@ -3,7 +3,7 @@ import { IOrdersGateway } from "../../communication/gateways/IOrdersGateway"
 import { OrderSchema } from "../../infra/datasource/typeorm/entities/OrderSchema"
 import { OrdersRepositoryMongoDb } from "../../infra/datasource/typeorm/mongodb/OrdersRepositoryMongoDb"
 import { IOrderQueueAdapterOUT } from "../../core/messaging/IOrderQueueAdapterOUT"
-import { OrderStatus } from "../../core/entities/Order"
+import { Order, OrderStatus } from "../../core/entities/Order"
 import { InputUpdateOrderStatusDTO, OutputUpdateOrderStatusDTO } from "../dtos/IUpdateOrderStatusDTO"
 import { QueueNames } from "../../core/messaging/QueueNames"
 
@@ -20,30 +20,39 @@ class UpdateOrderStatusUseCase{
     }
     
     async execute({ id, status }: InputUpdateOrderStatusDTO ): Promise<OutputUpdateOrderStatusDTO> {
-
+            
         const orderFound = await this.ordersRepository.findById(id)
-        let orderUpdate = orderFound
+        
+        if (!orderFound) {
+            throw new Error(`production order ID ${id} does not exist`)
+        }
+        
         const orderStatus : OrderStatus | string = status   
-
         if (!((Object.values(OrderStatus) as string[]).includes(orderStatus))) {
             throw new Error(`Order Status ${status} does not exist`)
         }
-
-        Object.assign(orderUpdate, {
-            id: id,
-            status: orderStatus
-        })
-
+        
         const queryRunner = this.dataSource.createQueryRunner()
-        await queryRunner.startTransaction()
+        await queryRunner.startTransaction()    
+        const ordersRepoUpdade = queryRunner.manager.getRepository(OrderSchema)
+        
+        try {    
+            orderFound.status = orderStatus                            
+            const orderUpdated = (await ordersRepoUpdade.save(OrderSchema.fromDomain(orderFound), { reload: true})).toDomain()
 
-        try {            
-            const orderUpdated = await this.ordersRepository.updateStatus(orderUpdate)
+            const orderMessage = {
+                id: orderUpdated.orderId,
+                status: orderUpdated.status
+            }
 
-            await this.publisher.publish(QueueNames.ORDER_DONE,JSON.stringify(orderUpdated))
-           
+            await this.publisher.publish(QueueNames.ORDER_DONE,JSON.stringify(orderMessage))
+
+            // Confirma a transação
+            await queryRunner.commitTransaction()
+
             return { 
                 id: orderUpdated.id,
+                orderId: orderUpdated.orderId,
                 status: orderUpdated.status
             }
 

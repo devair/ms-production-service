@@ -5,8 +5,8 @@ import { Product } from '../../../../core/entities/Product'
 
 // Definindo o Schema do Product
 export class ProductSchema {
-    @ObjectIdColumn()
-    id: ObjectId;
+    @ObjectIdColumn({ name: '_id'})
+    _id: ObjectId
 
     @Column()
     productName: string;
@@ -19,7 +19,7 @@ export class ProductSchema {
 
     toDomain(): Product {
         let product = new Product(this.productName, this.productCode, this.quantity)
-        if(this.id) product.id = this.id.toString()
+        if(this._id) product.id = this._id.toString()
         return product
     }
 
@@ -27,7 +27,7 @@ export class ProductSchema {
         const productSchema = new ProductSchema()
 
         if (product.id) {
-            productSchema.id = new ObjectId(product.id)
+            productSchema._id = new ObjectId(product.id)
         }
         productSchema.quantity = product.quantity
         productSchema.productCode = product.productCode
