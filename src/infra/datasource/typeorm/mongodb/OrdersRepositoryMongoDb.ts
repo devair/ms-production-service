@@ -31,6 +31,20 @@ class OrdersRepositoryMongoDb implements IOrdersGateway{
             return order.toDomain()
         return null
     }
+
+    async findByOrderId(orderId: number): Promise<Order> {
+        const order = await this.repository.findOne( { 
+            where: {
+                orderId
+            }            
+        })
+
+        if(order) {
+            return order.toDomain()
+        }
+        return null
+    }
+
     updateStatus(order: Order): Promise<Order> {
         throw new Error("Method not implemented.")
     }

@@ -9,6 +9,8 @@ interface IOrdersGateway {
     findById(id: string): Promise<Order>
 
     updateStatus(order: Order ): Promise<Order>
+
+    findByOrderId(orderId: number): Promise<Order>
 }
 
 export { IOrdersGateway }
