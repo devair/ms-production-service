@@ -35,7 +35,8 @@ export const createApp = async () => {
             objectSrc: ["'none'"],
             upgradeInsecureRequests: [],
         }
-    }))    
+    })) 
+
     //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
     app.get('/health', (request, response) => {

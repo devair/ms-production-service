@@ -6,6 +6,8 @@ import { OrderPresenter } from "../../../communication/presenters/OrderPresenter
 import { UpdateOrderStatusUseCase } from "../../../application/useCases/UpdateOrderStatusUseCase"
 import { UpdateOrderStatusController } from "../../../communication/controllers/UpdateOrderStatusController"
 import { IOrderQueueAdapterOUT } from "../../../core/messaging/IOrderQueueAdapterOUT"
+import { FindByOrderIdCase } from "../../../application/useCases/FindByOrderIdCase"
+import { FindByOrderIdController } from "../../../communication/controllers/FindByOrderIdController"
 
 class OrdersApi {
 
@@ -46,6 +48,19 @@ class OrdersApi {
         }
     }
 
+    async findByOrderId(request: Request, response: Response): Promise<Response> {
+        const { id } = request.params
+        const findByOrderIdCase = new FindByOrderIdCase(this.dataSource)
+        const findByOrderIdController = new FindByOrderIdController(findByOrderIdCase)        
+
+        try{
+            const data = await findByOrderIdController.handler(parseInt(id))
+            response.contentType('application/json')
+            return response.status(200).send(OrderPresenter.toJson(data))
+        } catch (ex) {
+            return response.status(400).json({ message: ex.message });
+        }        
+    }
 }
 
 export { OrdersApi }
