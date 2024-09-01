@@ -8,24 +8,32 @@ Projeto desenvolvido para gerenciar a produção do sistema de pedidos de uma la
 
 Ao ocorrer o pagamento do pedido, este micro serviço irá enviar uma alteraçao de status do pedido no micro servico [ms-orders-service](https://github.com/devair/ms-orders-service)
 
-## 2) Documentos
+
+## 2) Utilização da aplicação
+
+### a) Atualização do status de um pedido
+
+Utilizar a API abaixo para atualizar o status de um pedido.
 
 
-### a) Relatório de testes unitários
+PATCH http://localhost:3335/api/v1/production-orders/update/<PRODUCTION_ORDER_ID>
 
-[Relatório de cobertura em Html](./static/coverage-report.html)
-![Relatório jest](./static/coverage-report.png)
+Content-Type: application/json
 
-### b) Relatório de BDD
-[Relatório de testes BDD no Cucumber em Html](./static/cucumber-report.html)
-![Relatório BDD](./static/cucumber-report.png)
- 
+Body Request:
+~~~json
+{
+   "status": <ORDER_STATUS>
+}
+~~~
 
-## 3) Sonarqube
+Response Status Code: 201
 
-[Análise no SonarCloud](https://sonarcloud.io/summary/overall?id=devair_ms-payments-service)
-![imagem sonar](./static/sonar-analise.PNG)
-
-
-## 4) Utilização da aplicação
-
+Body Response:
+~~~json
+{
+  "id": <PRODUCTION_ORDER>,
+  "orderId": <ORDER_ID>,
+  "status": <ORDER_STATUS>
+}
+~~~
